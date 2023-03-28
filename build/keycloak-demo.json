@@ -1,0 +1,10 @@
+{
+    "realm": "Agile Credit",
+    "auth-server-url": "https://auth-demo.agilelender.com/auth/",
+    "ssl-required": "external",
+    "resource": "portal-frontend",
+    "public-client": true,
+    "confidential-port": 0
+  }
+  
+  

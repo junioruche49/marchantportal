@@ -1,0 +1,17 @@
+{
+  "appId": "com.agilecredit.app",
+  "appName": "Agile Credit",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {
+    "preferences": {
+      "AndroidLaunchMode": "singleTask"
+    }
+  }
+}

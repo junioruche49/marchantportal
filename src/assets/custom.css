@@ -1,0 +1,307 @@
+html:first-child::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+html:first-child::-webkit-scrollbar {
+  width: 10px;
+  background-color: #f5f5f5;
+}
+
+html:first-child::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.44, rgb(122, 153, 217)),
+    color-stop(0.72, rgb(73, 125, 189)),
+    color-stop(0.86, rgb(28, 58, 148))
+  );
+}
+
+input.agl-input {
+  background-color: #f4f4f4;
+  font-weight: 200;
+}
+
+input.agl-input::placeholder {
+  color: #787979;
+}
+
+.mobile-card-bg {
+  top: 25vh;
+}
+
+.fade-element {
+  opacity: 60%;
+}
+
+.toggle__dot {
+  top: -0.25rem !important;
+  left: -0.25rem !important;
+  transition: all 0.3s ease-in-out;
+}
+
+input:checked ~ .toggle__dot {
+  transform: translateX(100%);
+  background-color: rgb(73, 125, 189);
+}
+
+.input-range__label-container {
+  left: 0 !important;
+  top: 7px !important;
+}
+
+.input-range__label {
+  color: #6f6f6f !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  font-family: "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI",
+    "Roboto", "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+}
+
+.input-range__track {
+  background: #edf2f7 !important;
+  height: 0.6rem !important;
+}
+
+.input-range__slider {
+  border-radius: 20% !important;
+  height: 1rem !important;
+  width: 1.5rem !important;
+  background: #0a54a2 !important;
+  border: 1px solid #0a54a2 !important;
+  margin-left: 0 !important;
+  margin-top: -0.8rem !important;
+}
+
+.input-range__slider-container .input-range__label-container {
+  color: #fff !important;
+  top: -12px !important;
+  position: relative;
+  font-size: 0.8rem;
+  background: #0a54a2;
+  padding: 2px 7px;
+  border-radius: 4px;
+  left: -15px !important;
+  font-weight: 400;
+}
+
+.loan-calc {
+  background-image: url(/img/currency-bg.png);
+  background-size: cover;
+}
+
+.loan-calc-alt {
+  background-image: url(/img/currency-bg.png);
+  background-size: contain;
+}
+
+.schedule-table {
+  min-height: 300px;
+  max-height: 500px;
+}
+
+.schedule-table::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+.schedule-table::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+.schedule-table::-webkit-scrollbar-thumb {
+  background-color: #666;
+  border: 2px solid #555555;
+}
+
+.fade-in {
+  animation: fadeIn ease 1s;
+  -webkit-animation: fadeIn ease 1s;
+  -moz-animation: fadeIn ease 1s;
+  -o-animation: fadeIn ease 1s;
+  -ms-animation: fadeIn ease 1s;
+}
+
+.fade-in-2s {
+  animation: fadeIn ease 2s;
+  -webkit-animation: fadeIn ease 2s;
+  -moz-animation: fadeIn ease 2s;
+  -o-animation: fadeIn ease 2s;
+  -ms-animation: fadeIn ease 2s;
+}
+
+.fade-in-3s {
+  animation: fadeIn ease 3s;
+  -webkit-animation: fadeIn ease 3s;
+  -moz-animation: fadeIn ease 3s;
+  -o-animation: fadeIn ease 3s;
+  -ms-animation: fadeIn ease 3s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(1000px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(1000px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+  animation-duration: 0.5s;
+}
+
+.set-bg {
+  background-image: url(/img/set-bg.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.loan-request-bg {
+  background-image: url(/img/loan-request-bg.svg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 
+  li>ul                 { transform: translatex(100%) scale(0) }
+  li:hover>ul           { transform: translatex(101%) scale(1) }
+  li > button svg       { transform: rotate(-90deg) }
+  li:hover > button svg { transform: rotate(-270deg) } */
+
+/* Below styles fake what can be achieved with the tailwind config
+     you need to add the group-hover variant to scale and define your custom
+     min width style.
+  	 See https://codesandbox.io/s/tailwindcss-multilevel-dropdown-y91j7?file=/index.html
+  	 for implementation with config file
+  */
+.group:hover .group-hover\:scale-100 {
+  transform: scale(1);
+}
+.group:hover .group-hover\:-rotate-180 {
+  transform: rotate(180deg);
+}
+.scale-0 {
+  transform: scale(0);
+}
+.dropdown-wrap {
+  min-width: 8rem;
+}
+
+.default-card {
+  background: #028c21;
+}
+
+.default-card-label {
+  font-size: 0.7rem;
+}
+
+.payment-iframe {
+  min-height: 500px;
+}
+
+iframe.payment-iframe::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+iframe.payment-iframe::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+iframe.payment-iframe::-webkit-scrollbar-thumb {
+  background-color: #666;
+  border: 2px solid #555555;
+}
+
+.my-node-enter {
+  opacity: 0;
+}
+.my-node-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+.my-node-exit {
+  opacity: 1;
+}
+.my-node-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
+}
+.get-started-bg {
+  height: 100vh;
+  background: linear-gradient(
+      186.68deg,
+      rgba(231, 234, 238, 0.85) 56.42%,
+      #bccee1 103.03%
+    ),
+    url(/img/get-started.png);
+  background-size: cover;
+}

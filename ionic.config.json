@@ -1,0 +1,7 @@
+{
+  "name": "Agile Credit",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

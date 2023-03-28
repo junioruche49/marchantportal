@@ -1,0 +1,370 @@
+import React, { useState, useEffect, useCallback } from "react";
+import OnboardingSideBar from "../components/OnboardingSideBar";
+import { useForm, Controller } from "react-hook-form";
+
+import { useQuery } from "react-query";
+
+import useAuthStore from "../stores/authStore";
+import useProfileStore from "../stores/profileStore";
+import {
+  getEducationalFields,
+  patchRequest,
+  getProfileSection,
+} from "../clients/onboarding";
+import FormInput from "../components/FormInput";
+import { getPersonalDetails } from "../clients/profile";
+
+const EducationalDetails = (props: any) => {
+  let pageType = "profile";
+
+  if (props.location.pathname.includes("/onboarding")) {
+    pageType = "onboarding";
+  }
+
+  const [errorMsg, setErrorMsg] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [load, setLoad] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [readonlyValue, setReadonlyValue] = useState(false);
+  const token = useAuthStore((state) => state.accessToken);
+  const profile = useProfileStore((state) => state.data);
+  const { isLoading, error, data } = useQuery("education", () =>
+    getEducationalFields(token)
+  );
+
+  const {
+    isLoading: isLoading2,
+    error: error2,
+    data: educationalDetails,
+    refetch,
+  } = useQuery("educationalSections", () => getProfileSection(token));
+
+  // const initializeProfile = useProfileStore(
+  //   useCallback((state) => state.initialize, [])
+  // );
+
+  const { register, handleSubmit, errors, reset, control } = useForm();
+
+  useEffect(() => {
+    const result = profile; // result: { firstName: 'test', lastName: 'test2' }
+    reset(result); // asynchronously reset your form values
+  }, [reset]);
+
+  const getUpdatedProfile = async () => {
+    let getProfile = await getPersonalDetails(token);
+    initializeProfileStore(getProfile.data);
+  };
+
+  useEffect(() => {
+    getUpdatedProfile();
+  }, []);
+
+  const initializeProfileStore = useProfileStore(
+    useCallback((state) => state.initialize, [])
+  );
+
+  const initializeProfileSection = useProfileStore(
+    useCallback((state) => state.initializeProfileSection, [])
+  );
+
+  useEffect(() => {
+    educationalDetails &&
+      initializeProfileSection(
+        [].concat(educationalDetails),
+        educationalDetails.every((loan) => loan.completed === true)
+      );
+  }, [educationalDetails, initializeProfileSection]);
+
+  if (isLoading || isLoading2) {
+    return (
+      <>
+        <div className="w-full m-auto px-8 relative">
+          <img
+            src="/img/loading-gif.gif"
+            alt=""
+            className="w-1/8 m-auto py-20"
+          />
+        </div>
+      </>
+    );
+  }
+
+  const toggleInput = () => {
+    setReadonlyValue((prev) => !prev);
+  };
+
+  const updateErrors = (errors: []) => {
+    setErrorMsg(Object.values(errors).flat());
+  };
+
+  const onSubmit = async (values: any) => {
+    let date = new Date(values.year_of_graduation);
+    let year = date.getFullYear();
+    values.year_of_graduation = year;
+
+    let value = {};
+    data.map((val) => {
+      value[val.name] = values[val.name];
+    });
+
+    setLoad(true);
+    setLoading(true);
+    try {
+      let postData = await patchRequest(token, value);
+      setSubmitted(true);
+      const { data } = postData;
+      initializeProfileStore(data);
+      setTimeout(function () {
+        setSubmitted(false);
+        setLoading(false);
+        refetch();
+        pageType === "onboarding"
+          ? props.history.push("/onboarding/employment")
+          : props.history.replace("/profile/education");
+      }, 2000);
+      setLoad(false);
+      setLoading(false);
+      setErrorMsg([]);
+    } catch (error) {
+      setLoading(false);
+      if (error && error.response.status == 500) {
+        let msg = [] as any;
+        msg.push(error.response.data.message);
+        setErrorMsg(msg);
+        return;
+      }
+      if (!error.response) {
+        let msg = [] as any;
+        msg.push("Fatal Error! Please check your network connection or kindly logout and login again.");
+        setErrorMsg(msg);
+        return;
+      }
+      const {
+        response: { data },
+      } = error;
+      data.errors && updateErrors(data.errors);
+    }
+  };
+
+  // if (load) {
+  //   return <div>Loading...</div>;
+  // }
+
+  return (
+    <>
+      <div className="hidden md:block w-5/12 mb-6 border-r-2 border-gray-200">
+        <OnboardingSideBar name="education" />
+        <img src="/img/checklists.svg" alt="" className="w-1/4 m-auto pt-16" />
+      </div>
+
+      <div className="md:w-7/12 w-full mb-6 px-8 relative">
+        <h1 className="block text-gray-700 text-lg font-bold mb-4">
+          EDUCATION
+        </h1>
+        {errorMsg.length ? (
+          <div
+            className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-md my-5"
+            role="alert"
+          >
+            <div className="flex">
+              <div className="py-1">
+                <svg
+                  className="fill-current h-6 w-6 text-red-500 mr-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                </svg>
+              </div>
+              <div>
+                {/* <p className="font-bold">Sent successfully</p> */}
+                {/* <p className="text-sm">{errorMsg}</p> */}
+                <ul style={{ listStyleType: "none" }}>
+                  {errorMsg.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+        {submitted ? (
+          <>
+            <div
+              className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md fade-in"
+              role="alert"
+            >
+              <div className="flex">
+                <div className="py-1">
+                  <svg
+                    className="fill-current h-6 w-6 text-teal-500 mr-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold">Sent successfully</p>
+                  <p className="text-sm">
+                    Educational details created successfully
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* <h3 className="text-gray-600 text-sm"> We hate to ask, but regulations mandate us to. <br/> Your BVN is safe with us!</h3> */}
+            <form className="w-full max-w-lg" onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex flex-wrap -mx-3 mb-6">
+                {data &&
+                  data.map((data, key) => {
+                    return (
+                      <FormInput
+                        key={key}
+                        label={data.label}
+                        name={data.name}
+                        required={data.required}
+                        errors={errors}
+                        register={register}
+                        type={data.type}
+                        options={data.options}
+                        value={profile[data.name]}
+                        format={data.format}
+                        Controller={Controller}
+                        control={control}
+                        readonly={data.readonly}
+                        readonlyValue={readonlyValue}
+                        toggleInput={toggleInput}
+                      />
+                    );
+                  })}
+              </div>
+              <div className="flex items-center justify-between mt-5 mb-16">
+                <button
+                  className="bg-blue-700 hover:bg-blue-800 text-white text-sm md:text-xl font-light py-3 px-10 rounded-lg focus:outline-none focus:shadow-outline inline-flex items-center shadow-lg"
+                  type="submit"
+                >
+                  <span> Save </span>
+                  {!loading ? (
+                    <svg
+                      className="ml-2"
+                      width="13"
+                      height="13"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g id="done_24px">
+                        <path
+                          id="icon/action/done_24px"
+                          d="M2 0H14L18 4V16C18 17.1 17.1 18 16 18H2C0.89 18 0 17.1 0 16V2C0 0.9 0.89 0 2 0ZM16 16V4.83L13.17 2H2V16H16ZM9 9C7.34 9 6 10.34 6 12C6 13.66 7.34 15 9 15C10.66 15 12 13.66 12 12C12 10.34 10.66 9 9 9ZM12 3H3V7H12V3Z"
+                          fill="white"
+                        />
+                      </g>
+                    </svg>
+                  ) : (
+                    <img src="/img/25.gif" className="ml-2" alt="" />
+                  )}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+
+        <div className="flex justify-end w-full pr-0 md:pr-4 mt-10">
+          <div className="inline-flex justify-end">
+            <button
+              onClick={() =>
+                pageType === "onboarding"
+                  ? props.history.push("/onboarding/contact")
+                  : props.history.push("/profile/contact")
+              }
+              className="bg-gray-500 hover:bg-gray-600 text-white text-md md:text-xl font-light py-2 px-6 md:py-3 md:px-8 rounded-l focus:outline-none focus:shadow-outline inline-flex items-center"
+              type="button"
+            >
+              <svg
+                className="mr-2 -mt-1"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="chevron_right_24px">
+                  <path
+                    id="icon/navigation/chevron_left_24px"
+                    d="M15.705 16.59L11.125 12L15.705 7.41L14.295 6L8.29498 12L14.295 18L15.705 16.59Z"
+                    fill="white"
+                  />
+                </g>
+              </svg>
+              <span> Previous </span>
+            </button>
+
+            <button
+              // disabled={!submitted}
+              onClick={() =>
+                pageType === "onboarding"
+                  ? props.history.push("/onboarding/employment")
+                  : props.history.push("/profile/employment")
+              }
+              className="bg-green-600 hover:bg-green-700 text-white text-md md:text-xl font-light py-2 px-6 md:py-3 md:px-8 rounded-r focus:outline-none focus:shadow-outline inline-flex items-center"
+              type="button"
+            >
+              <span> Next </span>
+              <svg
+                className="ml-2 -mt-1"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="chevron_right_24px">
+                  <path
+                    id="icon/navigation/chevron_right_24px"
+                    d="M9.70492 6L8.29492 7.41L12.8749 12L8.29492 16.59L9.70492 18L15.7049 12L9.70492 6Z"
+                    fill="white"
+                  />
+                </g>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* <div className="absolute bottom-0 right-0 mr-10 -mt-8">
+          <button
+            onClick={() => props.history.push("/onboarding/employment")}
+            className="bg-gray-400 hover:bg-gray-600 text-white text-xl font-light py-3 px-10 rounded-lg focus:outline-none focus:shadow-outline inline-flex items-center"
+            type="button"
+            // disabled={!submitted}
+          >
+            <span> Next </span>
+            <svg
+              className="ml-2 -mt-1"
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="chevron_right_24px">
+                <path
+                  id="icon/navigation/chevron_right_24px"
+                  d="M9.70492 6L8.29492 7.41L12.8749 12L8.29492 16.59L9.70492 18L15.7049 12L9.70492 6Z"
+                  fill="white"
+                />
+              </g>
+            </svg>
+          </button>
+        </div> */}
+      </div>
+    </>
+  );
+};
+
+export default EducationalDetails;
